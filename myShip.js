@@ -13,7 +13,12 @@ class MyShip {
       this.lives = 3;
       this.shotInterval = 5;
       this.lastShotFiredTimestamp = -this.shotInterval;
-      this.color = green;
+
+      // this.color = green;
+      this.image = space1;
+      this.alienWidth = 30;
+      this.alienHeight = 35;
+
     }
   
     // draws the player
@@ -35,9 +40,13 @@ class MyShip {
   
     // stores and draws geometry for player's ship
     drawShip(x, y) {
-      rect(x, y, this.shipWidth, this.shipHeight, 2);
-      rect(x, y - this.shipHeight / 2 - this.cannonWidth / 2, this.cannonWidth, this.cannonWidth);
-      rect(x, y - this.shipHeight / 2 - this.cannonWidth - 1, 2, 2);
+
+   
+      // rect(x, y, this.shipWidth, this.shipHeight, 2);
+      // rect(x, y - this.shipHeight / 2 - this.cannonWidth / 2, this.cannonWidth, this.cannonWidth);
+      // rect(x, y - this.shipHeight / 2 - this.cannonWidth - 1, 2, 2); 
+       image(this.image, x, y, this.alienWidth, this.alienHeight);      
+
     }
   
     move() {
