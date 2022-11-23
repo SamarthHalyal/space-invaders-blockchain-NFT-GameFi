@@ -23,7 +23,7 @@ class MyShip {
   
     // draws the player
     drawPlayer() {
-      fill(this.color);
+      //fill(this.color);
       rectMode(CENTER);
       noStroke();
       this.drawShip(this.x, this.y);
