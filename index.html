@@ -342,9 +342,17 @@
 <html lang="en">
   <head>
     <!-- <link rel="icon" href="favicon.ico"> -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script language="javascript" type="text/javascript"
-    src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+    ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/addons/p5.sound.min.js"></script>
     <script src="myShip.js"></script>
@@ -352,71 +360,135 @@
     <script src="alien.js"></script>
     <script src="laser.js"></script>
     <script src="redAlien.js"></script>
-    <script src="sketch.js"></script> 
+    <script src="sketch.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <meta charset="utf-8" />
-
   </head>
   <body>
+    <nav
+      class="nav nav-pills flex-column flex-sm-row"
+      style="background-image: linear-gradient(to right, #04619f, #000000)"
+    >
+      <a
+        class="flex-sm-fill text-sm-center nav-link"
+        style="color: white"
+        href="javascript:sketch.js"
+      >
+        Home</a
+      >
+      <a
+        class="flex-sm-fill text-sm-center nav-link"
+        style="color: white"
+        href="#"
+        >NFT MarketPlace</a
+      >
+      <a
+        class="flex-sm-fill text-sm-center nav-link"
+        style="color: white"
+        id="auction"
+        >Auction</a
+      >
+    </nav>
 
-  
-    <nav class="nav nav-pills flex-column flex-sm-row"style="background-image: linear-gradient(to right, #04619F, #000000 );  ">
-      <a class="flex-sm-fill text-sm-center nav-link"style="color: white;" href='javascript:sketch.js'>   Home</a>
-    <a class="flex-sm-fill text-sm-center nav-link" style="color: white;"  href="#">NFT MarketPlace</a>
-    <a class="flex-sm-fill text-sm-center nav-link" style="color: white;"  href="auction.html">Auction</a>
-    </nav> 
     <script>
-          var cryptoSpaceInvaders;
-          var userAccount;
-          const btnBid = document.querySelector('.bid');
+      var cryptoSpaceInvaders;
+      var userAccount;
+      const btnBid = document.querySelector(".bid");
+      // const timeFrame = document.querySelector(".frame");
+      // const startBidding= document.querySelector('.bidding')
 
-          function startApp() {
-	
-            //Space Invaders contratc address
-            // var cryptoZombiesAddress = "0xC08d276D3022F1E9E1e99eBAa6410fE4FcbEcB8f";
-            var cryptoSpaceInvadersAddress = "0x5F30948C561988818B1332E50A1965bd29E2CfD4";
+      var auctionEnable = false;
 
-            cryptoSpaceInvaders = new web3.eth.Contract(cryptoSpaceInvadersABI, cryptoSpaceInvadersAddress);
+      function startApp() {
+        //Space Invaders contratc address
+        // var cryptoZombiesAddress = "0xC08d276D3022F1E9E1e99eBAa6410fE4FcbEcB8f";
+        var cryptoSpaceInvadersAddress =
+          "0x5F30948C561988818B1332E50A1965bd29E2CfD4";
 
-            // cryptoZombies.events.Transfer({ filter: { _to: userAccount } })
-            //   .on("data", function (event) {
-            //     let data = event.returnValues;
-            //     getZombiesByOwner(userAccount).then(displayZombies);
-            //   }).on("error", console.error);
+        cryptoSpaceInvaders = new web3.eth.Contract(
+          cryptoSpaceInvadersABI,
+          cryptoSpaceInvadersAddress
+        );
+
+        // cryptoZombies.events.Transfer({ filter: { _to: userAccount } })
+        //   .on("data", function (event) {
+        //     let data = event.returnValues;
+        //     getZombiesByOwner(userAccount).then(displayZombies);
+        //   }).on("error", console.error);
+      }
+
+      window.addEventListener("load", async () => {
+        // Modern dapp browsers...
+        if (window.ethereum) {
+          window.web3 = new Web3(ethereum);
+          try {
+            // Request account access if needed
+            const accounts = await ethereum.enable();
+            // Acccounts now exposed
+            userAccount = accounts[0];
+            startApp();
+          } catch (error) {
+            // User denied account access...
           }
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+          window.web3 = new Web3(web3.currentProvider);
+          // Acccounts always exposed
+          userAccount = web3.eth.accounts[0];
+          startApp();
+        }
+        // Non-dapp browsers...
+        else {
+          console.log(
+            "Non-Ethereum browser detected. You should consider trying MetaMask!"
+          );
+        }
+      });
+      $("#auction").click(function () {
+        $("body").html(
+          "<input type='text' id='artifacts' name='Artifacts'><br><br><button type='button'>Select Artifacts!</button><br><p>Bidding TimeFrame</p><br><button type='button' class='bidding' onClick=startBidding() >Start Bid</button><input type='number' id='time' name='time' value=3><br><br><button type='button' class='bid'>Bid</button>"
+        );
+      });
+      
 
-          window.addEventListener('load', async () => {
-          // Modern dapp browsers...
-          if (window.ethereum) {
-              window.web3 = new Web3(ethereum);
-              try {
-                  // Request account access if needed
-                  const accounts = await ethereum.enable();
-                  // Acccounts now exposed
-                  userAccount = accounts[0];
-                  startApp()
-              } catch (error) {
-                  // User denied account access...
-              }
-          }
-          // Legacy dapp browsers...
-          else if (window.web3) {
-              window.web3 = new Web3(web3.currentProvider);
-              // Acccounts always exposed
-              userAccount = web3.eth.accounts[0];
-              startApp()
-          }
-          // Non-dapp browsers...
-          else {
-              console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-          }
-        });
 
-        btnBid.addEventListener('click', () => {
-          cryptoSpaceInvaders.events.bid();
-        })
+function startBidding(){
+console.log('TIMMEFRAME!@# startBidding')
+// var countDownDate = new Date().getTime();
+
+// console.log('countDown', countDownDate)
+
+// Update the count down every 1 second
+var x = setInterval(function() {
+
+  // Get today's date and time
+  var now = new Date().getTime();
+
+  // Find the distance between now and the count down date
+  var distance = 30000 - now;
+  
+
+  // Time calculations for days, hours, minutes and seconds
+  // var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  // var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  // Display the result in the element with id="demo"
+  // document.getElementById("time").value = "Johnny Bravo";
+  // document.getElementByClass("frame").innerHTML = days + "d " + hours + "h "
+  // + minutes + "m " + seconds + "s ";
+
+console.log('Frame', minutes, seconds, document.getElementById("time").value)
+})
+}
+
+
+      btnBid.addEventListener("click", () => {
+        cryptoSpaceInvaders.events.bid();
+      });
     </script>
-
   </body>
 </html>
