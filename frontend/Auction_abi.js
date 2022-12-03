@@ -1,4 +1,4 @@
-var cryptoSpaceInvadersABI = [
+var auction_abi = [
 	{
 		"inputs": [
 			{

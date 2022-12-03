@@ -71,8 +71,7 @@ function preload() {
   alien3_a = loadImage('./images/alien3_a.png');
   alien3_b = loadImage('./images/alien3_b.png');
   alien4 = loadImage('./images/alien4.png');
-
-   space1 = loadImage('./images/space1.png');
+  space1 = loadImage('./images/space1.png');
 
 
 }
