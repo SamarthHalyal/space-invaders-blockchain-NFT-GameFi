@@ -1,50 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  
-<head>
+  <head>
     <style>
-        body {
-            background: rgb(164,219,232);
-            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-        }
-          
-        [data-tab-info] {
-            display: none;
-        }
-          
-        .active[data-tab-info] {
-            display: block;
-        }
-          
-        .tab-content {
-            font-size: 30px;
-            /* font-family: sans-serif; */
-            font-weight: bold;
-            color: rgb(82, 75, 75);
-        }
-          
-        .tabs {
-            font-size: 30px;
-            color: rgb(255, 255, 255);
-            display: flex;
-            justify-content: center;
-            padding-left: 25px;
-            padding-right: 25px;
-            margin: 0;
-        }
-          
-        .tabs span {
+      body {
+        background: rgb(164, 219, 232);
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+
+      [data-tab-info] {
+        display: none;
+      }
+
+      .active[data-tab-info] {
+        display: block;
+      }
+
+      .tab-content {
+        font-size: 30px;
+        font-weight: bold;
+        color: rgb(82, 75, 75);
+      }
+
+      .tabs {
+        font-size: 30px;
+        color: rgb(255, 255, 255);
+        display: flex;
+        justify-content: center;
+        padding-left: 25px;
+        padding-right: 25px;
+        margin: 0;
+      }
+
+      /* .tabs span {
             background: rgb(0, 0, 0);
             padding: 10px;
             border: 1px solid rgb(255, 255, 255);
             border-radius: 8px;
-        }
-          
-        .tabs span:hover {
-            background: rgb(59, 183, 221);
-            cursor: pointer;
-            color: black;
-        }
+        } */
+
+      .tabs span:hover {
+        background: black;
+        cursor: pointer;
+        color: black;
+      }
+
+      .btnStyle {
+        background-color: #23395d;
+        color: white;
+        border-radius: 5;
+        border-color: white;
+      }
     </style>
     <!-- <link rel="icon" href="favicon.ico"> -->
     <!-- <link
@@ -66,183 +72,349 @@
     <script src="sketch.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />  -->
     <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-    crossorigin="anonymous"
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
     />
-    <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"></script>
-    <script language="javascript" type="text/javascript" src="auction_abi.js"></script>
-    <script language="javascript" type="text/javascript" src="marketplace_abi.js"></script>
-    <script language="javascript" type="text/javascript" src="NFT_abi.js"></script>
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"
+    ></script>
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="auction_abi.js"
+    ></script>
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="marketplace_abi.js"
+    ></script>
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="NFT_abi.js"
+    ></script>
+    <script   language="javascript"
+    type="text/javascript" src="sketch.js"></script>
+
     <meta charset="utf-8" />
-</head>
-  
-<body>
-    <div class="tabs">
-        <span data-tab-value="#tab_1">NFT Market</span>
-        <span data-tab-value="#tab_2">Auction Market</span>
-        <span data-tab-value="#tab_3">Game</span>
+  </head>
+
+  <body>
+    <div
+      class="tabs"
+      class="nav nav-pills flex-column flex-sm-row"
+      style="
+        margin-bottom: 200px;
+        background-image: linear-gradient(to right, #04619f, #000000);
+      "
+    >
+      <span
+        class="flex-sm-fill text-sm-center nav-link"
+        style="color: white"
+        data-tab-value="#tab_1"
+        >NFT Market</span
+      >
+      <span
+        class="flex-sm-fill text-sm-center nav-link"
+        style="color: white"
+        data-tab-value="#tab_2"
+        >Auction Market</span
+      >
+      <span
+        class="flex-sm-fill text-sm-center nav-link"
+        style="color: white"
+        data-tab-value="#tab_3"
+        id="tab_3"
+        href="javascript:sketch.js"
+        onclick="myclick()"
+
+      >
+        Game</span
+      >
     </div>
-  
+
     <div class="tab-content">
-        <div class="tabs__tab active" id="tab_1" data-tab-info>
-            <p>1</p>
-
-            <div class="nft_creation">
-                <input/>
-                <button class="create_nft btn btn-success ">Create NFT</button>
-            </div>
-
-            <div>
-                <button class="get_nft btn btn-warning ">Get NFT</button>
-            </div>
+      <div class="tabs__tab active" id="tab_1" data-tab-info align="center">
+        <div class="nft_creation">
+          <input />
+          <button class="create_nft btnStyle">Create NFT</button>
         </div>
-        <div class="tabs__tab" id="tab_2" data-tab-info>
-            <p>2</p>
 
-            <input type="text" id="artifacts" name="Artifacts">
-            <button type="button">Select Artifacts!</button>
-            
-            <br><button type="button">Start Bid</button> 
-            <input type="text" id="time" name="time">
+        <div>
+          <button class="get_nft btnStyle" style="margin-top: 20px">
+            Get NFT
+          </button>
+        </div>
+      </div>
+      <div class="tabs__tab" id="tab_2" data-tab-info align="center">
+        <input type="text" id="artifacts" name="Artifacts" />
+        <button type="button" style="margin-bottom: 20px">
+          Select Artifacts!
+        </button>
 
-            <br>
-            <input type=="text" class="bid_amount" name="Artifacts">
-            <button class="bid_button btn btn-success" type="button">Bid</button>
-  
-            <br>
-            <button class="getHighestBid btn btn-success" type="button">Get Highest</button>
-        </div>
-        <div class="tabs__tab" id="tab_3" data-tab-info>
-            <p>3</p>
-            
-        </div>
+        <br/>
+        <button type="button" class="start_bid" style="margin-bottom: 20px">Start Bid</button>
+        <input type="text" class="timeH" style="width: 50px;"/>:HRS
+        <input type="text" class="timeM" style="width: 50px;"/>:MIN
+        <input type="text" class="timeS" style="width: 50px;"/>:SEC
+        <input type="text" class="expiry"/>
+
+        <p id="highest_bidder"></p>    
+        <p id="highest_bid"></p>
+        <br>
+        <br>
+        <input type="text" class="bid_amount" name="" />
+        <button class="bid_button btnStyle" type="button">Bid</button>
+
+        <br/>
+        <button class="getHighestBid btnStyle" type="button" style="margin-top: 20px">Get Highest</button>
+      </div>
+
+      <div
+        class="tabs__tab"
+        id="tab_3"
+        class="tab3Game"
+        data-tab-info
+        align="center"
+        href="javascript:sketch.js"
+        onclick="myclick()"></div>
+      <p id="deployer"></p>
     </div>
+
     <script type="text/javascript">
-        const tabs = document.querySelectorAll('[data-tab-value]')
-        const tabInfos = document.querySelectorAll('[data-tab-info]')
-  
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const target = document
-                    .querySelector(tab.dataset.tabValue);
-  
-                tabInfos.forEach(tabInfo => {
-                    tabInfo.classList.remove('active')
-                })
-                target.classList.add('active');
-            })
-        })
+      const tabs = document.querySelectorAll("[data-tab-value]");
+      const tabInfos = document.querySelectorAll("[data-tab-info]");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = document.querySelector(tab.dataset.tabValue);
+
+          tabInfos.forEach((tabInfo) => {
+            tabInfo.classList.remove("active");
+          });
+          target.classList.add("active");
+        });
+      });
     </script>
     <script>
-        var node, NFT, accounts, deployer, MarketPlace, Auction;
-        const createNFTButton = document.querySelector('.create_nft');
-        const getNFTButton = document.querySelector('.get_nft');
-        const bidButton = document.querySelector('.bid_button');
-        const highestBidBtn = document.querySelector('.getHighestBid');
+       
+      var node, NFT, accounts, deployer, MarketPlace, Auction, highest_bidder, highest_bid;
+      const createNFTButton = document.querySelector(".create_nft");
+      const getNFTButton = document.querySelector(".get_nft");
+      const bidButton = document.querySelector(".bid_button");
+      const highestBidBtn = document.querySelector(".getHighestBid");
+      const gameLink = document.getElementById(".tab3Game");
+      const startBid = document.querySelector(".start_bid");
 
-        async function startApp() {
-            var AuctionAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-            Auction = new web3.eth.Contract(auction_abi, AuctionAddress);  
+      function myclick() {
+        var myLink = document.getElementById("tab_3");
+        myLink.onclick = function () {
+          var script = document.createElement("script");
+          script.type = "text/javascript";
+          script.src = "sketch.js";
+          console.log("GAMELINKCLiCKMYCLICK");
 
-            var MarketPlaceAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-            MarketPlace = new web3.eth.Contract(marketplace_abi, MarketPlaceAddress);
+          document.getElementsByTagName("head")[0].appendChild(script);
+          return false;
+        };
+        document.getElementById("tab_3").click();
+      }
 
-            var NFTAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-            NFT = new web3.eth.Contract(NFT_abi, NFTAddress);
+      async function startApp() {
+        var AuctionAddress = "0x94Cf6DFC5A992A987e4dF86B4E2AE4fA23897784";
+        Auction = new web3.eth.Contract(auction_abi, AuctionAddress);
 
-            console.log("Created contract handles.");
+        var MarketPlaceAddress = "0xB0a782Fa7B16397443F93626DE73Ce96BBdD950c";
+        MarketPlace = new web3.eth.Contract(
+          marketplace_abi,
+          MarketPlaceAddress
+        );
+
+        var NFTAddress = "0xcf163e8bE1D2673388211AEC5EdEE53Dd913ECE1";
+        NFT = new web3.eth.Contract(NFT_abi, NFTAddress);
+
+        console.log("Created contract handles.");
+      }
+
+      async function getNft() {
+        // Request account access if needed
+        accounts = await ethereum.enable();
+        // Acccounts now exposed
+        deployer = accounts[0];
+
+        let txResponse = await NFT.methods
+          .tokenURI(0)
+          .call({ from: deployer })
+          .then(function (result) {
+            console.log(result);
+          });
+      }
+
+      window.addEventListener("load", async () => {
+        // Modern dapp browsers...
+        if (window.ethereum) {
+          await window.ethereum.request({ method: "eth_requestAccounts" });
+          window.web3 = new Web3(ethereum);
+          try {
+            // Request account access if needed
+            accounts = await ethereum.enable();
+            // Acccounts now exposed
+            deployer = accounts[0];
+            startApp();
+          } catch (error) {
+            // User denied account access...
+          }
         }
-
-        async function getNft() {
-            // Request account access if needed
-            accounts = await ethereum.enable();
-            // Acccounts now exposed
-            deployer = accounts[0];
-
-            let txResponse = await NFT.methods.tokenURI(0).call({from: deployer})
-            .then(function(result) {
-                console.log(result);
-            });
+        // Legacy dapp browsers...
+        else if (window.web3) {
+          console.log("2");
+          window.web3 = new Web3(web3.currentProvider);
+          // Acccounts always exposed
+          accounts = web3.eth.accounts;
+          deployer = accounts[0];
+          startApp();
         }
+        // Non-dapp browsers...
+        else {
+          console.log(
+            "Non-Ethereum browser detected. You should consider trying MetaMask!"
+          );
+        }
+      });
 
-        window.addEventListener('load', async () => {
-            // Modern dapp browsers...
-            if (window.ethereum) {
-                await window.ethereum.request({method: 'eth_requestAccounts'});
-                window.web3 = new Web3(ethereum);
-                try {
-                    // Request account access if needed
-                    accounts = await ethereum.enable();
-                    // Acccounts now exposed
-                    deployer = accounts[0];
-                    startApp()
-                } catch (error) {
-                    // User denied account access...
-                }
+      createNFTButton.addEventListener("click", async () => {
+        console.log("NFT Button Clicked");
+
+        // Request account access if needed
+        accounts = await ethereum.enable();
+        // Acccounts now exposed
+        deployer = accounts[0];
+
+        await NFT.methods
+          .mintNFT("TokenURI")
+          .send({ from: deployer })
+          .then(function (receipt) {
+            console.log(receipt);
+          });
+          console.log(deployer);
+          document.getElementById("deployer").innerHTML = deployer;
+        // await txResponse.wait(1);
+      });
+
+      getNFTButton.addEventListener("click", () => {
+        getNft();
+      });
+
+      //         gameLink.onclick = function(){
+      // console.log('GAMELINKCLiCK')
+
+      // var script = document.createElement("script");
+      // script.type = "text/javascript";
+      // script.src="sketch.js";
+
+      // document.getElementsByTagName("head")[0].appendChild(script);
+      // return false;
+
+      // }
+      //     gameRedirect.addEventListener('click', async () => {
+      //         let innerHTML
+
+      //     })
+      //     $("#tab_3").click(function () {
+      //     $("body").html(
+      //       "<input type='text' id='artifacts' name='Artifacts'><br><br><button type='button'>Select Artifacts!</button><br><p>Bidding TimeFrame</p><br><button type='button' class='bidding' onClick=startBidding() >Start Bid</button><input type='number' id='time' name='time' value=3><br><br><button type='button' class='bid'>Bid</button>"
+      //     );
+      //   });
+
+      bidButton.addEventListener("click", async () => {
+        console.log("Bid Button Clicked");
+        // Request account access if needed
+        accounts = await ethereum.enable();
+        // Acccounts now exposed
+        deployer = accounts[0];
+        const bidAmount = document.querySelector(".bid_amount").value;
+        await Auction.methods
+          .bid()
+          .send({ from: deployer, value: bidAmount })
+          .then(function (receipt) {
+            console.log(receipt);
+          });
+          document.getElementById("deployer").innerHTML = deployer;
+      });
+
+      // window.addEventListener("load", async () => {
+      //   document.getElementById("deployer").innerHTML = deployer;
+      // });
+
+      // highestBidBtn.addEventListener("click", async () => {
+      //   // Request account access if needed
+      //   accounts = await ethereum.enable();
+      //   // Acccounts now exposed
+      //   deployer = accounts[0];
+
+      //   let txResponse = await Auction.methods
+      //     .getHighestBid()
+      //     .call({ from: deployer })
+      //     .then(function (result) {
+      //       console.log(result);
+      //     });
+      // });
+
+      startBid.addEventListener('click', () => {
+        document.querySelector(".expiry").value = "BIDDING ONGOING";
+        var h = document.querySelector(".timeH").value;
+        var m = document.querySelector(".timeM").value;
+        var s = document.querySelector(".timeS").value;
+      
+        var endDate = new Date().getTime() + ( (h * 3600000) + (m * 60000) + (s * 1000) ); 
+        var timer = setInterval(async function() {
+          let now = new Date().getTime(); 
+          let t = endDate - now;
+          if (t >= 0) {
+            let days = Math.floor(t / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let mins = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+            let secs = Math.floor((t % (1000 * 60)) / 1000);
+            document.querySelector(".timeH").value = hours;
+            document.querySelector(".timeM").value = mins;
+            document.querySelector(".timeS").value = secs;
+            if(hours == 0 && mins == 0 && secs == 0) {
+              winner = true;
             }
-            // Legacy dapp browsers...
-            else if (window.web3) {
-                console.log("2");
-                window.web3 = new Web3(web3.currentProvider);
-                // Acccounts always exposed
-                accounts = web3.eth.accounts;
-                deployer = accounts[0];
-                startApp()
+          } else {
+            if(winner == true) {
+              document.querySelector(".expiry").value = "BIDDING CLOSED";
+              // Request account access if needed
+              accounts = await ethereum.enable();
+              // Acccounts now exposed
+              deployer = accounts[0];
+
+              let txResponse = await Auction.methods
+                .getHighestBid()
+                .call({ from: deployer })
+                .then(function (result) {
+                  highest_bid = result;
+                  console.log(result);
+                });
+
+              txResponse = await Auction.methods
+                .getHighestBidder()
+                .call({ from: deployer })
+                .then(function (result) {
+                  highest_bidder = result;
+                  console.log(result);
+                });
+              winner = false;
+              document.getElementById("highest_bidder").innerHTML = "Highest Bidder: " + highest_bidder;
+              document.getElementById("highest_bid").innerHTML = "Highest Bid: " + highest_bid;
             }
-            // Non-dapp browsers...
-            else {
-                console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-            }
-        });
-
-        createNFTButton.addEventListener('click', async ()  =>  {
-            console.log("NFT Button Clicked");
-
-            // Request account access if needed
-            accounts = await ethereum.enable();
-            // Acccounts now exposed
-            deployer = accounts[0];
-
-            await NFT.methods.mintNFT("TokenURI").send({from: deployer})
-            .then(function(receipt) {
-                console.log(receipt);
-            });
-            // await txResponse.wait(1);
-        })
-
-        getNFTButton.addEventListener('click', () => {
-            getNft();
-        })
-
-        bidButton.addEventListener('click', async () => {
-            console.log("Bid Button Clicked");
-            // Request account access if needed
-            accounts = await ethereum.enable();
-            // Acccounts now exposed
-            deployer = accounts[0];
-            const bidAmount = document.querySelector('.bid_amount').value;
-            await Auction.methods.bid().send({from: deployer,
-                                              value: bidAmount})
-            .then(function(receipt) {
-                console.log(receipt);
-            });
-        })
-
-        highestBidBtn.addEventListener('click', async () => {
-            // Request account access if needed
-            accounts = await ethereum.enable();
-            // Acccounts now exposed
-            deployer = accounts[0];
-
-            let txResponse = await Auction.methods.getHighestBid()
-            .call({from: deployer})
-            .then(function(result) {
-                console.log(result);
-            });
-        })
-  </script>
-</body>
-  
+          }
+        }, 1000);
+      })
+    </script>
+  </body>
 </html>
