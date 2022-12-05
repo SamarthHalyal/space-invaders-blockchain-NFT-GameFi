@@ -1,86 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <style>
-      body {
-        background: rgb(164, 219, 232);
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-      }
-
-      [data-tab-info] {
-        display: none;
-      }
-
-      .active[data-tab-info] {
-        display: block;
-      }
-
-      .tab-content {
-        font-size: 30px;
-        font-weight: bold;
-        color: rgb(82, 75, 75);
-      }
-
-      .tabs {
-        font-size: 30px;
-        color: rgb(255, 255, 255);
-        display: flex;
-        justify-content: center;
-        padding-left: 25px;
-        padding-right: 25px;
-        margin: 0;
-      }
-
-      /* .tabs span {
-            background: rgb(0, 0, 0);
-            padding: 10px;
-            border: 1px solid rgb(255, 255, 255);
-            border-radius: 8px;
-        } */
-
-      .tabs span:hover {
-        background: black;
-        cursor: pointer;
-        color: black;
-      }
-
-      .btnStyle {
-        background-color: #23395d;
-        color: white;
-        border-radius: 15px;
-        border:1px solid white;
-      }
-      .card-body {
-        margin: 20px;
-        width: 28rem;
-        background-color: #add8e6;
-        color: black;
-        border-radius: 15px;
-        border: 1px solid black;
-        align-self: center;
-      }
-
-    </style>
-    <!-- <link rel="icon" href="favicon.ico"> -->
-    <!-- <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-    crossorigin="anonymous"
-    />
-    <script
-      language="javascript"
-      type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/p5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/addons/p5.sound.min.js"></script> -->
-    <!-- <script src="myShip.js"></script>
-    <script src="shot.js"></script>
-    <script src="alien.js"></script>
-    <script src="laser.js"></script>
-    <script src="redAlien.js"></script>
-    <script src="sketch.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css" />  -->
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
@@ -92,107 +13,68 @@
       type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"
     ></script>
-    <script
-      language="javascript"
-      type="text/javascript"
-      src="Auction_abi.js"
-    ></script>
-    <script
-      language="javascript"
-      type="text/javascript"
-      src="marketplace_abi.js"
-    ></script>
-    <script
-      language="javascript"
-      type="text/javascript"
-      src="NFT_abi.js"
-    ></script>
-    <script   language="javascript"
-    type="text/javascript" src="sketch.js"></script>
-
     <meta charset="utf-8" />
   </head>
 
   <body>
-    <div
-      class="tabs"
-      class="nav nav-pills flex-column flex-sm-row"
-      style="
-        margin-bottom: 200px;
-        background-image: linear-gradient(to right, #04619f, #000000);
-      "
-    >
+    <div class="tabs-wrapper nav nav-pills flex-column flex-sm-row">
       <span
         class="flex-sm-fill text-sm-center nav-link"
-        style="color: white"
         data-tab-value="#tab_1"
-        >NFT Market</span
       >
+        NFT Market
+      </span>
       <span
         class="flex-sm-fill text-sm-center nav-link"
-        style="color: white"
         data-tab-value="#tab_2"
-        >Auction Market</span
       >
+        Auction Market
+      </span>
       <span
         class="flex-sm-fill text-sm-center nav-link"
-        style="color: white"
         data-tab-value="#tab_3"
         id="tab_3"
-        href="javascript:sketch.js"
-        onclick="myclick()"
-
       >
-        Game</span
-      >
+        Game
+      </span>
     </div>
 
     <div class="tab-content">
-      <div class="tabs__tab active" id="tab_1" data-tab-info align="center">
-        <div class="nft_creation">
-          <input class="listingPrice"/>
-          <button class="create_nft btnStyle">Create NFT</button>
+      <!-- =================== TAB 1 =================== -->
+      <div id="tab_1" data-tab-info align="center">
+        <div>
+          <input id="listing-price" />
+          <button id="create-nft-button" class="btnStyle">Create NFT</button>
         </div>
 
         <div>
-          <button class="deploy_marketplace btnStyle" style="margin-top: 20px">
+          <button id="deploy-marketplace-button" class="btnStyle">
             Deploy To Marketplace
           </button>
         </div>
       </div>
-      <div class="tabs__tab" id="tab_2" data-tab-info align="center">
-        <input type="text" id="artifacts" name="Artifacts" />
-        <button type="button" style="margin-bottom: 20px">
-          Select Artifacts!
+      <!-- ==================== TAB 2 =================== -->
+      <div class="active" id="tab_2" data-tab-info align="center">
+        <input type="text" id="artifacts" />
+        <button class="btnStyle">Select Artifacts!</button>
+        <button class="btnStyle" id="start-bid-button">Start Bid</button>
+        <br />
+        <input type="number" id="timeH" class="input-time" />:HRS
+        <input type="number" id="timeM" class="input-time" />:MIN
+        <input type="number" id="timeS" class="input-time" />:SEC
+        <input type="text" id="expiry" />
+        <br />
+        <p id="highest-bidder"></p>
+        <p id="highest-bid"></p>
+        <input type="number" id="bid-amount" />
+        <button id="bid-button" class="btnStyle">Bid</button>
+
+        <button id="get-highest-bid-button" class="btnStyle">
+          Get Highest
         </button>
-
-        <br/>
-        <button type="button" class="start_bid" style="margin-bottom: 20px">Start Bid</button>
-        <input type="text" class="timeH" style="width: 50px;"/>:HRS
-        <input type="text" class="timeM" style="width: 50px;"/>:MIN
-        <input type="text" class="timeS" style="width: 50px;"/>:SEC
-        <input type="text" class="expiry"/>
-
-        <p id="highest_bidder"></p>    
-        <p id="highest_bid"></p>
-        <br>
-        <br>
-        <input type="text" class="bid_amount" name="" />
-        <button class="bid_button btnStyle" type="button">Bid</button>
-
-        <br/>
-        <button class="getHighestBid btnStyle" type="button" style="margin-top: 20px">Get Highest</button>
       </div>
-
-      <div
-        class="tabs__tab"
-        id="tab_3"
-        class="tab3Game"
-        data-tab-info
-        align="center"
-        href="javascript:sketch.js"
-        onclick="myclick()"></div>
-      <div id="deployer"></div>
+      <!-- ================= TAB 3 ==================  -->
+      <div id="tab_3" data-tab-info align="center"></div>
     </div>
 
     <script type="text/javascript">
@@ -211,15 +93,20 @@
       });
     </script>
     <script>
-       
       let deployerArray = [];
-      var node, NFT, accounts, deployer, MarketPlace, Auction, highest_bidder, highest_bid;
-      const createNFTButton = document.querySelector(".create_nft");
-      const getNFTButton = document.querySelector(".deploy_marketplace");
-      const bidButton = document.querySelector(".bid_button");
-      const highestBidBtn = document.querySelector(".getHighestBid");
-      const gameLink = document.getElementById(".tab3Game");
-      const startBid = document.querySelector(".start_bid");
+      var node,
+        NFT,
+        accounts,
+        deployer,
+        MarketPlace,
+        Auction,
+        highest_bidder,
+        highest_bid;
+      const createNFTButton = document.getElementById("create-nft-button");
+      const getNFTButton = document.getElementById("deploy-marketplace-button");
+      const bidButton = document.getElementById("bid-button");
+      const highestBidBtn = document.getElementById("get-highest-bid-button");
+      const startBid = document.getElementById("start-bid-button");
 
       function myclick() {
         var myLink = document.getElementById("tab_3");
@@ -251,37 +138,37 @@
         console.log("Created contract handles.");
       }
 
-      window.addEventListener("load", async () => {
-        // Modern dapp browsers...
-        if (window.ethereum) {
-          await window.ethereum.request({ method: "eth_requestAccounts" });
-          window.web3 = new Web3(ethereum);
-          try {
-            // Request account access if needed
-            accounts = await ethereum.enable();
-            // Acccounts now exposed
-            deployer = accounts[0];
-            startApp();
-          } catch (error) {
-            // User denied account access...
-          }
-        }
-        // Legacy dapp browsers...
-        else if (window.web3) {
-          console.log("2");
-          window.web3 = new Web3(web3.currentProvider);
-          // Acccounts always exposed
-          accounts = web3.eth.accounts;
-          deployer = accounts[0];
-          startApp();
-        }
-        // Non-dapp browsers...
-        else {
-          console.log(
-            "Non-Ethereum browser detected. You should consider trying MetaMask!"
-          );
-        }
-      });
+      // window.addEventListener("load", async () => {
+      //   // Modern dapp browsers...
+      //   if (window.ethereum) {
+      //     await window.ethereum.request({ method: "eth_requestAccounts" });
+      //     window.web3 = new Web3(ethereum);
+      //     try {
+      //       // Request account access if needed
+      //       accounts = await ethereum.enable();
+      //       // Acccounts now exposed
+      //       deployer = accounts[0];
+      //       startApp();
+      //     } catch (error) {
+      //       // User denied account access...
+      //     }
+      //   }
+      //   // Legacy dapp browsers...
+      //   else if (window.web3) {
+      //     console.log("2");
+      //     window.web3 = new Web3(web3.currentProvider);
+      //     // Acccounts always exposed
+      //     accounts = web3.eth.accounts;
+      //     deployer = accounts[0];
+      //     startApp();
+      //   }
+      //   // Non-dapp browsers...
+      //   else {
+      //     console.log(
+      //       "Non-Ethereum browser detected. You should consider trying MetaMask!"
+      //     );
+      //   }
+      // });
 
       createNFTButton.addEventListener("click", async () => {
         console.log("NFT Button Clicked");
@@ -297,7 +184,7 @@
           .then(function (receipt) {
             console.log(receipt);
           });
-          document.getElementById("deployer").innerHTML = deployer;
+        document.getElementById("deployer").innerHTML = deployer;
         deployerArray.push(deployer);
         let htmlCode = ``;
         deployerArray.forEach(function (element) {
@@ -315,7 +202,7 @@
       });
 
       getNFTButton.addEventListener("click", async () => {
-        var listing_price = document.querySelector(".listingPrice").value;
+        var listing_price = document.getElementById("listing-price");
 
         console.log("Listing Price: ", listing_price);
 
@@ -325,37 +212,12 @@
         deployer = accounts[0];
 
         await MarketPlace.methods
-          .listItem(
-            deployer,
-            0,
-            listing_price
-          )
+          .listItem(deployer, 0, listing_price)
           .send({ from: deployer, value: listing_price })
-          .then(function(receipt) {
+          .then(function (receipt) {
             console.log(receipt);
           });
       });
-
-      //         gameLink.onclick = function(){
-      // console.log('GAMELINKCLiCK')
-
-      // var script = document.createElement("script");
-      // script.type = "text/javascript";
-      // script.src="sketch.js";
-
-      // document.getElementsByTagName("head")[0].appendChild(script);
-      // return false;
-
-      // }
-      //     gameRedirect.addEventListener('click', async () => {
-      //         let innerHTML
-
-      //     })
-      //     $("#tab_3").click(function () {
-      //     $("body").html(
-      //       "<input type='text' id='artifacts' name='Artifacts'><br><br><button type='button'>Select Artifacts!</button><br><p>Bidding TimeFrame</p><br><button type='button' class='bidding' onClick=startBidding() >Start Bid</button><input type='number' id='time' name='time' value=3><br><br><button type='button' class='bid'>Bid</button>"
-      //     );
-      //   });
 
       bidButton.addEventListener("click", async () => {
         console.log("Bid Button Clicked");
@@ -363,14 +225,14 @@
         accounts = await ethereum.enable();
         // Acccounts now exposed
         deployer = accounts[0];
-        const bidAmount = document.querySelector(".bid_amount").value;
+        const bidAmount = document.getElementById("bid-amount");
         await Auction.methods
           .bid()
           .send({ from: deployer, value: bidAmount })
           .then(function (receipt) {
             console.log(receipt);
           });
-          document.getElementById("deployer").innerHTML = deployer;
+        document.getElementById("deployer").innerHTML = deployer;
         deployerArray.push(deployer);
         let htmlCode = ``;
         deployerArray.forEach(function (element) {
@@ -387,48 +249,33 @@
         document.getElementById("deployer").innerHTML = htmlCode;
       });
 
-      // window.addEventListener("load", async () => {
-      //   document.getElementById("deployer").innerHTML = deployer;
-      // });
+      startBid.addEventListener("click", () => {
+        document.getElementById("expiry") = "BIDDING ONGOING";
+        var h = document.getElementById("timeH");
+        var m = document.getElementById("timeM");
+        var s = document.getElementById("timeS");
 
-      // highestBidBtn.addEventListener("click", async () => {
-      //   // Request account access if needed
-      //   accounts = await ethereum.enable();
-      //   // Acccounts now exposed
-      //   deployer = accounts[0];
-
-      //   let txResponse = await Auction.methods
-      //     .getHighestBid()
-      //     .call({ from: deployer })
-      //     .then(function (result) {
-      //       console.log(result);
-      //     });
-      // });
-
-      startBid.addEventListener('click', () => {
-        document.querySelector(".expiry").value = "BIDDING ONGOING";
-        var h = document.querySelector(".timeH").value;
-        var m = document.querySelector(".timeM").value;
-        var s = document.querySelector(".timeS").value;
-      
-        var endDate = new Date().getTime() + ( (h * 3600000) + (m * 60000) + (s * 1000) ); 
-        var timer = setInterval(async function() {
-          let now = new Date().getTime(); 
+        var endDate =
+          new Date().getTime() + (h * 3600000 + m * 60000 + s * 1000);
+        var timer = setInterval(async function () {
+          let now = new Date().getTime();
           let t = endDate - now;
           if (t >= 0) {
             let days = Math.floor(t / (1000 * 60 * 60 * 24));
-            let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let hours = Math.floor(
+              (t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            );
             let mins = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
             let secs = Math.floor((t % (1000 * 60)) / 1000);
-            document.querySelector(".timeH").value = hours;
-            document.querySelector(".timeM").value = mins;
-            document.querySelector(".timeS").value = secs;
-            if(hours == 0 && mins == 0 && secs == 0) {
+            document.getElementById("timeH") = hours;
+            document.getElementById("timeM") = mins;
+            document.getElementById("timeS") = secs;
+            if (hours == 0 && mins == 0 && secs == 0) {
               winner = true;
             }
           } else {
-            if(winner == true) {
-              document.querySelector(".expiry").value = "BIDDING CLOSED";
+            if (winner == true) {
+              document.getElementById("expiry") = "BIDDING CLOSED";
               // Request account access if needed
               accounts = await ethereum.enable();
               // Acccounts now exposed
@@ -450,12 +297,14 @@
                   console.log(result);
                 });
               winner = false;
-              document.getElementById("highest_bidder").innerHTML = "Highest Bidder: " + highest_bidder;
-              document.getElementById("highest_bid").innerHTML = "Highest Bid: " + highest_bid + " Eth";
+              document.getElementById("highest-bidder").innerHTML =
+                "Highest Bidder: " + highest_bidder;
+              document.getElementById("highest-bid").innerHTML =
+                "Highest Bid: " + highest_bid + " Eth";
             }
           }
         }, 1000);
-      })
+      });
     </script>
   </body>
 </html>

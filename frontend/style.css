@@ -1,8 +1,67 @@
-html, body {
-    margin: 0;
-    padding: 0;
-  }
-  canvas {
-    display: block;
-  }
-  
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  display: block;
+}
+
+body {
+  background: rgb(164, 219, 232);
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+[data-tab-info] {
+  display: none;
+}
+
+.active[data-tab-info] {
+  display: block;
+}
+
+.tab-content {
+  font-size: 30px;
+  font-weight: bold;
+  color: rgb(82, 75, 75);
+}
+
+.tabs-wrapper {
+  font-size: 30px;
+  color: rgb(255, 255, 255);
+  display: flex;
+  justify-content: center;
+  padding-left: 25px;
+  padding-right: 25px;
+  background-image: linear-gradient(to right, #04619f, #000000);
+}
+
+.tabs-wrapper span:hover {
+  background: black;
+  cursor: pointer;
+}
+
+.tab {
+}
+
+.btnStyle {
+  background-color: #23395d;
+  color: white;
+  border-radius: 15px;
+  border: 1px solid white;
+}
+
+.input-time {
+  width: 50px;
+}
+
+.card-body {
+  margin: 20px;
+  width: 28rem;
+  background-color: #add8e6;
+  color: black;
+  border-radius: 15px;
+  border: 1px solid black;
+  align-self: center;
+}
