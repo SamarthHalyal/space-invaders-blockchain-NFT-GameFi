@@ -48,9 +48,19 @@
       .btnStyle {
         background-color: #23395d;
         color: white;
-        border-radius: 5;
-        border-color: white;
+        border-radius: 15px;
+        border:1px solid white;
       }
+      .card-body {
+        margin: 20px;
+        width: 28rem;
+        background-color: #add8e6;
+        color: black;
+        border-radius: 15px;
+        border: 1px solid black;
+        align-self: center;
+      }
+
     </style>
     <!-- <link rel="icon" href="favicon.ico"> -->
     <!-- <link
@@ -85,7 +95,7 @@
     <script
       language="javascript"
       type="text/javascript"
-      src="auction_abi.js"
+      src="Auction_abi.js"
     ></script>
     <script
       language="javascript"
@@ -140,13 +150,13 @@
     <div class="tab-content">
       <div class="tabs__tab active" id="tab_1" data-tab-info align="center">
         <div class="nft_creation">
-          <input />
+          <input class="listingPrice"/>
           <button class="create_nft btnStyle">Create NFT</button>
         </div>
 
         <div>
-          <button class="get_nft btnStyle" style="margin-top: 20px">
-            Get NFT
+          <button class="deploy_marketplace btnStyle" style="margin-top: 20px">
+            Deploy To Marketplace
           </button>
         </div>
       </div>
@@ -182,7 +192,7 @@
         align="center"
         href="javascript:sketch.js"
         onclick="myclick()"></div>
-      <p id="deployer"></p>
+      <div id="deployer"></div>
     </div>
 
     <script type="text/javascript">
@@ -202,9 +212,10 @@
     </script>
     <script>
        
+      let deployerArray = [];
       var node, NFT, accounts, deployer, MarketPlace, Auction, highest_bidder, highest_bid;
       const createNFTButton = document.querySelector(".create_nft");
-      const getNFTButton = document.querySelector(".get_nft");
+      const getNFTButton = document.querySelector(".deploy_marketplace");
       const bidButton = document.querySelector(".bid_button");
       const highestBidBtn = document.querySelector(".getHighestBid");
       const gameLink = document.getElementById(".tab3Game");
@@ -238,20 +249,6 @@
         NFT = new web3.eth.Contract(NFT_abi, NFTAddress);
 
         console.log("Created contract handles.");
-      }
-
-      async function getNft() {
-        // Request account access if needed
-        accounts = await ethereum.enable();
-        // Acccounts now exposed
-        deployer = accounts[0];
-
-        let txResponse = await NFT.methods
-          .tokenURI(0)
-          .call({ from: deployer })
-          .then(function (result) {
-            console.log(result);
-          });
       }
 
       window.addEventListener("load", async () => {
@@ -300,13 +297,43 @@
           .then(function (receipt) {
             console.log(receipt);
           });
-          console.log(deployer);
           document.getElementById("deployer").innerHTML = deployer;
-        // await txResponse.wait(1);
+        deployerArray.push(deployer);
+        let htmlCode = ``;
+        deployerArray.forEach(function (element) {
+          htmlCode =
+            htmlCode +
+            `<div class="card" align='center' style='border-width:0px;'>
+        <div class="card-body"  >
+          <h5 class="card-title">Deployer Name</h5>
+          <h6 class="card-subtitle mb-2 text-muted">${element}</h6>
+        </div>
+      </div>`;
+        });
+
+        document.getElementById("deployer").innerHTML = htmlCode;
       });
 
-      getNFTButton.addEventListener("click", () => {
-        getNft();
+      getNFTButton.addEventListener("click", async () => {
+        var listing_price = document.querySelector(".listingPrice").value;
+
+        console.log("Listing Price: ", listing_price);
+
+        // Request account access if needed
+        accounts = await ethereum.enable();
+        // Acccounts now exposed
+        deployer = accounts[0];
+
+        await MarketPlace.methods
+          .listItem(
+            deployer,
+            0,
+            listing_price
+          )
+          .send({ from: deployer, value: listing_price })
+          .then(function(receipt) {
+            console.log(receipt);
+          });
       });
 
       //         gameLink.onclick = function(){
@@ -344,6 +371,20 @@
             console.log(receipt);
           });
           document.getElementById("deployer").innerHTML = deployer;
+        deployerArray.push(deployer);
+        let htmlCode = ``;
+        deployerArray.forEach(function (element) {
+          htmlCode =
+            htmlCode +
+            `<div class="card" align='center' style='border-width:0px;'>
+        <div class="card-body"  >
+          <h5 class="card-title">Deployer Name</h5>
+          <h6 class="card-subtitle mb-2 text-muted">${element}</h6>
+        </div>
+      </div>`;
+        });
+
+        document.getElementById("deployer").innerHTML = htmlCode;
       });
 
       // window.addEventListener("load", async () => {
@@ -410,7 +451,7 @@
                 });
               winner = false;
               document.getElementById("highest_bidder").innerHTML = "Highest Bidder: " + highest_bidder;
-              document.getElementById("highest_bid").innerHTML = "Highest Bid: " + highest_bid;
+              document.getElementById("highest_bid").innerHTML = "Highest Bid: " + highest_bid + " Eth";
             }
           }
         }, 1000);
