@@ -15,14 +15,13 @@ contract NFT is ERC721URIStorage, Ownable {
 
   constructor() ERC721("SpaceShip", "SS") {}
 
-  function mintNFT(string calldata tokenURI) public returns (uint256) {
+  function mintNFT(string calldata tokenURI) public{
     uint256 tokenId = currentTokenId;
     _safeMint(msg.sender, tokenId);
     _setTokenURI(tokenId, tokenURI);
 
     emit NFTMinted(tokenId, msg.sender);
     currentTokenId = currentTokenId + 1;
-    return tokenId;
   }
 
   function withdraw() public payable onlyOwner {

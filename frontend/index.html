@@ -4,7 +4,7 @@
     <link rel="shortcut icon" href="#" />
 
     <link rel="stylesheet" type="text/css" href="index.css" />
-    <script type="text/javascript" src="index.js"></script>
+    <script type="module" src="index.js"></script>
 
     <link
       rel="stylesheet"
@@ -41,23 +41,44 @@
         Game
       </span>
     </div>
-
     <div class="tab-content">
       <!-- =================== TAB 1 =================== -->
-      <div id="tab_1" data-tab-info align="center">
+      <div class="active nft-marketplace" id="tab_1" data-tab-info>
         <div>
-          <input id="listing-price" />
+          <input type="file" id="nft-image-input" />
           <button id="create-nft-button" class="btnStyle">Create NFT</button>
         </div>
 
         <div>
-          <button id="deploy-marketplace-button" class="btnStyle">
-            Deploy To Marketplace
+          <input type="number" id="nft-listprice-input" />
+          <button class="btnStyle" id="list-to-marketplace-button">
+            List to Marketplace
           </button>
         </div>
+
+        <div>
+          <button class="btnStyle" id="buy-nft-button">Buy NFT</button>
+        </div>
+
+        <div>
+          <button class="btnStyle" id="cancel-listing-button">
+            Cancel Listing
+          </button>
+        </div>
+
+        <div>
+          <input type="number" id="nft-new-listprice-input" />
+          <button class="btnStyle" id="update-listing-button">
+            Update Listing
+          </button>
+        </div>
+
+        <button class="btnStyle" id="withdraw-proceeds-button">
+          Withdraw Proceeds
+        </button>
       </div>
       <!-- ==================== TAB 2 =================== -->
-      <div class="active" id="tab_2" data-tab-info align="center">
+      <div class="" id="tab_2" data-tab-info align="center">
         <input type="text" id="artifacts" />
         <button class="btnStyle">Select Artifacts!</button>
         <button class="btnStyle" id="start-bid-button">Start Bid</button>

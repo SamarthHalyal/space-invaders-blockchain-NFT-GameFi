@@ -1,20 +1,31 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.7;
 
-contract Auction {
+import "./Marketplace.sol";
+
+contract Auctions {
+    struct Auction{
+        address owner;
+        address nftAddress;
+        uint256 tokenId;
+        uint256 basePrice;
+        uint256 duration;
+    }
+    Auction[] public auctions;
+
     mapping( address => uint ) bidders;
     uint highestBid;
     address highestBidder;
 
-    // To create new bid-- function
-    function bid() public payable {
-        require(msg.value > 0, "Bid amount cannot be zero!");
-        require(msg.value > highestBid, "Bid amount is less than Base Bid Price!");
-        bidders[msg.sender] = msg.value;
-        highestBid = msg.value;
-        highestBidder = msg.sender;
-    }
+    event AuctionStarted(
+        address owner, 
+        address nftAddress,
+        uint256 tokenId,
+        uint256 basePrice,
+        uint256 duration
+    );
 
+    
     // get balance-- test function
     function balance(address _address) public view returns(uint) {
         return bidders[_address];

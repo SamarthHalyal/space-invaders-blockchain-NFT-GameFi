@@ -4,7 +4,7 @@ const { network, deployments, ethers } = require("hardhat");
 const { developmentChains } = require("../helper-hardhat-config");
 
 developmentChains.includes(network.name)
-  ? describe("Tests for 'Nft.sol',", () => {
+  ? xdescribe("Tests for 'Nft.sol',", () => {
       const DEFAULT_TOKEN_URI = "TokenURI";
 
       let txResponse;
