@@ -5,6 +5,18 @@ require("dotenv").config();
 require("solidity-coverage");
 require("hardhat-deploy");
 require("@symblox/hardhat-abi-gen");
+require("@nomicfoundation/hardhat-toolbox");
+
+// Go to https://www.alchemyapi.io, sign up, create
+// a new App in its dashboard, and replace "KEY" with its key
+const ALCHEMY_API_KEY = "_ovO1GnL0QJ2NGzy0IyT22d7W0qZcO7P";
+
+// Replace this private key with your Goerli account private key
+// To export your private key from Metamask, open Metamask and
+// go to Account Details > Export Private Key
+// Beware: NEVER put real Ether into testing accounts
+const GOERLI_PRIVATE_KEY =
+  "ed2654e947132a5ee26af9a076ac08bda63ef5c91b2e40b9613bcc1652a36645";
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -13,7 +25,7 @@ require("@symblox/hardhat-abi-gen");
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY || "";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 
-const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL || "";
+const GOERLI_RPC_URL = `` || "";
 const MUMBAI_RPC_URL =
   `https://polygon-mumbai.g.alchemy.com/v2/${process.env.MUMBAI_RPC_URL}` || "";
 
@@ -27,6 +39,10 @@ module.exports = {
     mumbai: {
       url: MUMBAI_RPC_URL,
       chainId: 80001,
+    },
+    goerli: {
+      url: `https://eth-goerli.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+      accounts: [GOERLI_PRIVATE_KEY],
     },
   },
   etherscan: {
