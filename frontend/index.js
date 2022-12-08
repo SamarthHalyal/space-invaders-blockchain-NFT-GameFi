@@ -1,19 +1,11 @@
-import {
-  AUCTION_ABI,
-  AUCTION_ADDRESS,
-  MARKETPLACE_ABI,
-  PINATA_JWT_TOKEN,
-  MARKETPLACE_ADDRESS,
-  NFT_ABI,
-  NFT_ADDRESS,
-  debug,
-} from "./const.js";
-
-import { uploadToPinata } from "./utils.js";
+import { MARKETPLACE_ADDRESS, PINATA_JWT_TOKEN, debug } from "./const.js";
 
 let accounts = [];
 let deployer = null;
 let NFT, Marketplace, Auction;
+let uploadedFileHash;
+let clickedTokenID, clickedBasePrice;
+let nftItemsMainArray;
 
 const loadWeb3 = async () => {
   if (window.ethereum) {
@@ -44,12 +36,66 @@ const loadWeb3 = async () => {
 };
 
 const loadContracts = async () => {
-  NFT = new web3.eth.Contract(NFT_ABI, NFT_ADDRESS);
-  Marketplace = new web3.eth.Contract(MARKETPLACE_ABI, MARKETPLACE_ADDRESS);
-  Auction = new web3.eth.Contract(AUCTION_ABI, AUCTION_ADDRESS);
+  Marketplace = new web3.eth.Contract(marketplace_ABI, MARKETPLACE_ADDRESS);
+
+  await Marketplace.methods
+    .getItems()
+    .call({ from: deployer })
+    .then(function (nftsArray) {
+      nftItemsMainArray = nftsArray;
+      // fill the nft slider
+      for (let index in nftsArray) {
+        let nftItem = nftsArray[index];
+        document.getElementById("image-src-n").src =
+          "https://i.seadn.io/gae/ruhRkr5PimxyAtqVRzH1cPqaqSbOu2RCO5OOzWDctIGbBYpqSyYOgBy0MdbW7pEEavLgA4vP9lNZK1uKUWKqNiqbdU2n_U4cswSQuw?auto=format&w=1000";
+        document.getElementById("image-src-n").id = "image-src-" + index;
+
+        document.getElementById("nft-name-n").innerHTML = nftItem[1];
+        document.getElementById("nft-name-n").id = "nft-name-" + index;
+
+        document.getElementById(
+          "info-n"
+        ).innerHTML = `Status: ${nftItem[0]}<br>Owner: ${nftItem[2]}<br>Base Price: ${nftItem[4]}`;
+        document.getElementById("info-n").id = "nft-name-" + index;
+
+        document.getElementById("nft-n").id = "nft-" + index;
+
+        var equip_id = "equip-btn-" + index;
+        document.getElementById("equip-btn-n").id = equip_id;
+        document.getElementById(equip_id).addEventListener("click", () => {
+          clickedTokenID = nftItem[1];
+        });
+
+        var listing_id = "listing-btn-" + index;
+        document.getElementById("listing-btn-n").id = listing_id;
+        document.getElementById(listing_id).addEventListener("click", () => {
+          clickedTokenID = nftItem[1];
+          document.getElementById("image-listing-src").src =
+            "https://i.seadn.io/gae/ruhRkr5PimxyAtqVRzH1cPqaqSbOu2RCO5OOzWDctIGbBYpqSyYOgBy0MdbW7pEEavLgA4vP9lNZK1uKUWKqNiqbdU2n_U4cswSQuw?auto=format&w=1000";
+          document.getElementById(
+            "listing-info"
+          ).innerHTML = `Status: ${nftItem[0]}<br>Owner: ${nftItem[2]}<br>Listing Price: ${nftItem[3]}`;
+        });
+
+        var auction_id = "auction-btn-" + index;
+        document.getElementById("auction-btn-n").id = auction_id;
+        document.getElementById(auction_id).addEventListener("click", () => {
+          clickedTokenID = nftItem[1];
+          clickedBasePrice = nftItem[4];
+          document.getElementById("image-auction-src").src =
+            "https://i.seadn.io/gae/ruhRkr5PimxyAtqVRzH1cPqaqSbOu2RCO5OOzWDctIGbBYpqSyYOgBy0MdbW7pEEavLgA4vP9lNZK1uKUWKqNiqbdU2n_U4cswSQuw?auto=format&w=1000";
+          document.getElementById(
+            "auction-info"
+          ).innerHTML = `Status: ${nftItem[0]}<br>Owner: ${nftItem[2]}`;
+        });
+      }
+    });
 };
 
 window.onload = async () => {
+  document.getElementById("bid_amount_edit").disabled = true;
+  document.getElementById("bid_button").disabled = true;
+
   const loadedSuccessfully = await loadWeb3();
   if (!loadedSuccessfully) return;
 
@@ -57,10 +103,29 @@ window.onload = async () => {
   const callOptions = {
     from: deployer,
   };
+
+  document.getElementById("list_button").addEventListener("click", async () => {
+    let listing_price = document.getElementById("list_amount_edit").value;
+    await Marketplace.methods
+      .listItem(clickedTokenID, listing_price)
+      .send(callOptions)
+      .then(function (receipt) {
+        console.log(receipt);
+      });
+  });
+
+  document.addEventListener("click", (e) => {
+    let element = e.target;
+    console.log("click event triggered");
+    if (element.id == "auction-btn-0") {
+    }
+    if (element.id == "auction-btn-1") {
+    }
+  });
+
   document
     .getElementById("nft-image-input")
     .addEventListener("change", function () {
-      console.log(this);
       const selectedFile = this.files[0];
 
       const data = new FormData();
@@ -78,206 +143,80 @@ window.onload = async () => {
         body: data,
       }).then(async (response) => {
         response = await response.json();
-        console.log(response);
+        uploadedFileHash = response.IpfsHash;
+
+        const nft1Image = document.getElementById("image-src-1");
+        nft1Image.src = "https://gateway.pinata.cloud/ipfs/" + uploadedFileHash;
       });
     });
 
-  document
-    .getElementById("create-nft-button")
-    .addEventListener("click", async () => {
-      debug("Create NFT button clicked...");
-      const imageFile = "image";
-      const tokenID = await NFT.methods.getCurrentTokenId().call(callOptions);
-      const tokenURI = await uploadToPinata(imageFile);
-
-      await NFT.methods
-        .mintNFT(tokenURI)
-        .send(callOptions)
-        .then(function (receipt) {
-          debug("NFT Minted...");
-          debug(receipt);
-        });
-
-      await NFT.methods
-        .approve(MARKETPLACE_ADDRESS, tokenID)
-        .send(callOptions)
-        .then((receipt) => {
-          debug("NFT Approved...");
-          debug(receipt);
-        });
-    });
-
-  document
-    .getElementById("list-to-marketplace-button")
-    .addEventListener("click", async () => {
-      debug("List to Marketplace button clicked...");
-
-      var listing_price = document.getElementById("nft-listprice-input");
-      debug("Listing Price: ", listing_price);
-
-      // <TODO> dont do it this way, use getElementById somehow
-      const tokenID = await NFT.methods.getCurrentTokenId().call(callOptions);
-      await Marketplace.methods
-        .listItem(NFT_ADDRESS, tokenID, listing_price)
-        .send(callOptions)
-        .then((receipt) => {
-          debug(receipt);
-        });
-    });
-
-  document
-    .getElementById("buy-nft-button")
-    .addEventListener("click", async () => {
-      debug("Buy NFT button clicked...");
-
-      // <TODO> dont do it this way, use getElementById somehow
-      const tokenID = await NFT.methods.getCurrentTokenId().call(callOptions);
-      // <TODO> dont do it this way, use getElementById somehow
-      const listingPrice = "0.1";
-
-      await Marketplace.methods
-        .buyItem(NFT_ADDRESS, tokenID)
-        .send({ ...callOptions, value: listingPrice })
-        .then((receipt) => {
-          debug(receipt);
-        });
-    });
-
-  document
-    .getElementById("cancel-listing-button")
-    .addEventListener("click", async () => {
-      debug("Cancel Listing button clicked...");
-
-      // <TODO> dont do it this way, use getElementById somehow
-      const tokenID = await NFT.methods.getCurrentTokenId().call(callOptions);
-
-      await Marketplace.methods
-        .cancelListing(NFT_ADDRESS, tokenID)
-        .send(callOptions)
-        .then((receipt) => {
-          debug(receipt);
-        });
-    });
-
-  document
-    .getElementById("update-listing-button")
-    .addEventListener("click", async () => {
-      debug("Update Listing button clicked...");
-
-      var new_listing_price = document.getElementById(
-        "nft-new-listprice-input"
-      );
-      debug("Listing Price: ", new_listing_price);
-
-      // <TODO> dont do it this way, use getElementById somehow
-      const tokenID = await NFT.methods.getCurrentTokenId().call(callOptions);
-      await Marketplace.methods
-        .updateListing(NFT_ADDRESS, tokenID, new_listing_price)
-        .send(callOptions)
-        .then((receipt) => {
-          debug(receipt);
-        });
-    });
-
-  document
-    .getElementById("withdraw-proceeds-button")
-    .addEventListener("click", async () => {
-      debug("Withdraw Proceed button clicked...");
-
-      await Marketplace.methods
-        .withdrawProceeds()
-        .send(callOptions)
-        .then((receipt) => {
-          debug(receipt);
-        });
-    });
-
-  const bidButton = document.getElementById("bid-button");
-  const startBidButton = document.getElementById("start-bid-button");
-
-  bidButton.addEventListener("click", async () => {
-    const bidAmount = document.getElementById("bid-amount");
-    await Auction.methods
-      .bid()
-      .send({
-        from: deployer,
-        value: bidAmount,
-      })
+  document.getElementById("mint_nft").addEventListener("click", async () => {
+    await Marketplace.methods
+      .mintNFT(uploadedFileHash)
+      .send(callOptions)
       .then(function (receipt) {
-        console.log(receipt);
+        debug(receipt);
       });
-    document.getElementById("deployer").innerHTML = deployer;
-    deployerArray.push(deployer);
-    let htmlCode = ``;
-    deployerArray.forEach(function (element) {
-      htmlCode =
-        htmlCode +
-        `<div class="card" align='center' style='border-width:0px;'>
-      <div class="card-body"  >
-        <h5 class="card-title">Deployer Name</h5>
-        <h6 class="card-subtitle mb-2 text-muted">${element}</h6>
-      </div>
-    </div>`;
-    });
-
-    document.getElementById("deployer").innerHTML = htmlCode;
   });
-  var highest_bidder, highest_bid;
-  startBidButton.addEventListener("click", () => {
-    // document.getElementById("expiry") = "BIDDING ONGOING";
-    var h = document.getElementById("timeH");
-    var m = document.getElementById("timeM");
-    var s = document.getElementById("timeS");
 
-    var endDate = new Date().getTime() + (h * 3600000 + m * 60000 + s * 1000);
+  document.getElementById("bid_button").addEventListener("click", async () => {
+    let biddingAmount =
+      document.getElementById("bid_amount_edit").value * 100000000000000;
+    clickedTokenID = 0;
+    clickedBasePrice = 5;
+    await Marketplace.methods
+      .startAuction(clickedTokenID, clickedBasePrice, 10)
+      .send(callOptions)
+      .then(function (receipt) {
+        debug(receipt);
+      });
+
+    await Marketplace.methods
+      .bid(clickedTokenID)
+      .send({ ...callOptions, value: biddingAmount })
+      .then(function (receipt) {
+        debug(receipt);
+      });
+  });
+
+  document.getElementById("start_bid").addEventListener("click", async () => {
+    document.getElementById("bid_amount_edit").disabled = false;
+    document.getElementById("bid_button").disabled = false;
+    var h = document.getElementById("timeH").value;
+    var m = document.getElementById("timeM").value;
+    var s = document.getElementById("timeS").value;
+    let action_base_price = document.getElementById("base_auction_price").value;
+
+    let endTime = parseInt(new Date().getTime() / 1000);
+    endTime += h * 3600;
+    endTime += m * 60;
+    endTime += s;
+    // now pass this
+
+    var duration = new Date().getTime() + (h * 3600000 + m * 60000 + s * 1000);
     var timer = setInterval(async function () {
       let now = new Date().getTime();
-      let t = endDate - now;
+      let t = duration - now;
+      console.log(t);
       if (t >= 0) {
         let days = Math.floor(t / (1000 * 60 * 60 * 24));
         let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         let mins = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
         let secs = Math.floor((t % (1000 * 60)) / 1000);
-        // document.getElementById("timeH") = hours;
-        // document.getElementById("timeM") = mins;
-        // document.getElementById("timeS") = secs;
-        if (hours == 0 && mins == 0 && secs == 0) {
-          winner = true;
-        }
+        document.getElementById("timeH").value = hours;
+        document.getElementById("timeM").value = mins;
+        document.getElementById("timeS").value = secs;
       } else {
-        if (winner == true) {
-          // document.getElementById("expiry") = "BIDDING CLOSED";
-          // Request account access if needed
-          accounts = await ethereum.enable();
-          // Acccounts now exposed
-          deployer = accounts[0];
-
-          let txResponse = await Auction.methods
-            .getHighestBid()
-            .call({
-              from: deployer,
-            })
-            .then(function (result) {
-              highest_bid = result;
-              console.log(result);
-            });
-
-          txResponse = await Auction.methods
-            .getHighestBidder()
-            .call({
-              from: deployer,
-            })
-            .then(function (result) {
-              highest_bidder = result;
-              console.log(result);
-            });
-          winner = false;
-          document.getElementById("highest-bidder").innerHTML =
-            "Highest Bidder: " + highest_bidder;
-          document.getElementById("highest-bid").innerHTML =
-            "Highest Bid: " + highest_bid + " Eth";
-        }
+        document.getElementById("bid_amount_edit").disabled = true;
+        document.getElementById("bid_button").disabled = true;
+        clearInterval(timer);
       }
     }, 1000);
+    await Marketplace.methods
+      .startAuction(clickedTokenID, action_base_price, endTime)
+      .send(callOptions)
+      .then(function (receipt) {
+        console.log(receipt);
+      });
   });
 };

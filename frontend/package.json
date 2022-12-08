@@ -1,30 +1,22 @@
 {
-  "name": "space-invaders-frontend",
+  "name": "hook-theme",
   "version": "1.0.0",
-  "description": "final project for blockchain class 559",
+  "description": "This landing page theme is built on [shorthand css framework](https://github.com/shorthandcss/shorthand)",
+  "main": "index.html",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "http-server ./"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SamarthHalyal/space-invaders-blockchain-NFT-GameFi.git"
+    "url": "git+https://github.com/bansal/hook-theme.git"
   },
-  "keywords": [
-    "blockchain",
-    "solidity",
-    "nft"
-  ],
-  "authors": [
-    "samarthhalyal",
-    "harinkhakhi",
-    "pallavi khedle",
-    "vinayshah"
-  ],
+  "author": "samarthhalyal, harinkhakhi",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/SamarthHalyal/space-invaders-blockchain-NFT-GameFi/issues"
+    "url": "https://github.com/bansal/hook-theme/issues"
   },
-  "homepage": "https://github.com/SamarthHalyal/space-invaders-blockchain-NFT-GameFi#readme",
+  "homepage": "https://github.com/bansal/hook-theme#readme",
   "dependencies": {
     "http-server": "^14.1.1"
   }
