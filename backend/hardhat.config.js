@@ -11,11 +11,11 @@ require("@symblox/hardhat-abi-gen");
  */
 
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY || "";
-const GOERLI_RPC_URL =
-  process.env.GOERLI_RPC_URL ||
-  "https://eth-goerli.alchemyapi.io/v2/your-api-key";
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
+
+const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL || "";
+const MUMBAI_RPC_URL =
+  `https://polygon-mumbai.g.alchemy.com/v2/${process.env.MUMBAI_RPC_URL}` || "";
 
 module.exports = {
   solidity: "0.8.8",
@@ -24,6 +24,10 @@ module.exports = {
     hardhat: {
       chainId: 31337,
     },
+    mumbai: {
+      url: MUMBAI_RPC_URL,
+      chainId: 80001,
+    },
   },
   etherscan: {
     apiKey: ETHERSCAN_API_KEY,
@@ -31,8 +35,8 @@ module.exports = {
   gasReporter: {
     enabled: false,
     outputFile: "gas-report.txt",
-    // currency: "USD"
-    // coinmarketcap: COINMARKETCAP_API_KEY,
+    currency: "USD",
+    coinmarketcap: COINMARKETCAP_API_KEY,
   },
   namedAccounts: {
     deployer: {
