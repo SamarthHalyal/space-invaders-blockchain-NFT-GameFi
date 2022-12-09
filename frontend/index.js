@@ -1,11 +1,16 @@
-import { MARKETPLACE_ADDRESS, PINATA_JWT_TOKEN, debug } from "./const.js";
+import {
+  MARKETPLACE_ADDRESS,
+  PINATA_JWT_TOKEN,
+  PINATA_GATEWAY_PREFIX,
+  debug,
+} from "./const.js";
 
-let accounts = [];
-let deployer = null;
-let NFT, Marketplace, Auction;
-let uploadedFileHash;
-let clickedTokenID, clickedBasePrice;
-let nftItemsMainArray;
+let accounts, currentUser;
+let Marketplace;
+let clickedTokenID;
+let currItemId = 0;
+let selectedToken;
+let items = [];
 
 const loadWeb3 = async () => {
   if (window.ethereum) {
@@ -14,11 +19,11 @@ const loadWeb3 = async () => {
       await window.ethereum.request({ method: "eth_requestAccounts" });
       window.web3 = new Web3(ethereum);
       accounts = await ethereum.enable();
-      deployer = accounts[0];
+      currentUser = accounts[0];
 
       window.ethereum.on("accountsChanged", function (accounts) {
         // Time to reload your interface with accounts[0]!
-        deployer = accounts[0];
+        currentUser = accounts[0];
       });
 
       return true;
@@ -29,7 +34,7 @@ const loadWeb3 = async () => {
     debug("found window.web3...");
     window.web3 = new Web3(web3.currentProvider);
     accounts = web3.eth.accounts;
-    deployer = accounts[0];
+    currentUser = accounts[0];
 
     window.ethereum.on("accountsChanged", function (accounts) {
       // Time to reload your interface with accounts[0]!
@@ -45,170 +50,241 @@ const loadWeb3 = async () => {
   return false;
 };
 
-const loadContracts = async () => {
-  Marketplace = new web3.eth.Contract(marketplace_ABI, MARKETPLACE_ADDRESS);
+const setUp = () => {
+  // toggle mobile menu
+  $('[data-toggle="toggle-nav"]').on("click", function () {
+    $(this)
+      .closest("nav")
+      .find($(this).attr("data-target"))
+      .toggleClass("hidden");
+    return false;
+  });
 
-  await Marketplace.methods
-    .getItems()
-    .call({ from: deployer })
-    .then(async function (nftsArray) {
-      nftItemsMainArray = nftsArray;
-      // fill the nft slider
-      for (let index in nftsArray) {
-        let nftItem = nftsArray[index];
-        let currentURL = "";
-        await Marketplace.methods
-          .tokenURI(nftItem[1])
-          .call({ from: deployer })
-          .then(function (url) {
-            currentURL = url;
-          });
-        document.getElementById("image-src-n").src =
-          "https://gateway.pinata.cloud/ipfs/" + currentURL;
-        document.getElementById("image-src-n").id = "image-src-" + index;
+  // feather icons
+  feather.replace();
 
-        document.getElementById("nft-name-n").innerHTML = nftItem[1];
-        document.getElementById("nft-name-n").id = "nft-name-" + index;
-
-        document.getElementById(
-          "info-n"
-        ).innerHTML = `Status: ${nftItem[0]}<br>Owner: ${nftItem[2]}<br>Base Price: ${nftItem[4]}`;
-        document.getElementById("info-n").id = "nft-name-" + index;
-
-        document.getElementById("nft-n").id = "nft-" + index;
-
-        var equip_id = "equip-btn-" + index;
-        document.getElementById("equip-btn-n").id = equip_id;
-        document.getElementById(equip_id).addEventListener("click", () => {
-          clickedTokenID = nftItem[1];
-        });
-
-        var listing_id = "listing-btn-" + index;
-        document.getElementById("listing-btn-n").id = listing_id;
-        document
-          .getElementById(listing_id)
-          .addEventListener("click", async () => {
-            clickedTokenID = nftItem[1];
-            let currentURL1 = "";
-            await Marketplace.methods
-              .tokenURI(clickedTokenID)
-              .call({ from: deployer })
-              .then(function (url) {
-                currentURL1 = url;
-              });
-            document.getElementById("image-listing-src").src =
-              "https://gateway.pinata.cloud/ipfs/" + currentURL1;
-            document.getElementById(
-              "listing-info"
-            ).innerHTML = `Status: ${nftItem[0]}<br>Owner: ${nftItem[2]}<br>Listing Price: ${nftItem[3]}`;
-          });
-
-        var auction_id = "auction-btn-" + index;
-        document.getElementById("auction-btn-n").id = auction_id;
-        document
-          .getElementById(auction_id)
-          .addEventListener("click", async () => {
-            clickedTokenID = nftItem[1];
-            clickedBasePrice = nftItem[4];
-            let currentURL2 = "";
-            await Marketplace.methods
-              .tokenURI(clickedTokenID)
-              .call({ from: deployer })
-              .then(function (url) {
-                currentURL2 = url;
-              });
-            document.getElementById("image-auction-src").src =
-              "https://gateway.pinata.cloud/ipfs/" + currentURL2;
-            document.getElementById(
-              "auction-info"
-            ).innerHTML = `Status: ${nftItem[0]}<br>Owner: ${nftItem[2]}`;
-          });
-      }
-    });
+  $("#slider").slick({
+    dots: true,
+    arrows: true,
+    infinite: true,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: false,
+    autoplaySpeed: 2000,
+    centerMode: false,
+    customPaging: function (slider, i) {
+      return (
+        '<div class="bg-white br-round w-2 h-2 opacity-50 mt-5" id=' +
+        i +
+        "> </div>"
+      );
+    },
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  });
 };
 
-window.onload = async () => {
-  document.getElementById("bid_amount_edit").disabled = true;
-  document.getElementById("bid_button").disabled = true;
-  document.getElementById("winner_button").disabled = true;
+const loadContracts = async () => {
+  Marketplace = new web3.eth.Contract(marketplace_ABI, MARKETPLACE_ADDRESS);
+};
 
+const uploadToPinata = async (selectedFile) => {
+  const data = new FormData();
+  const metadata = JSON.stringify({
+    name: selectedFile["name"],
+  });
+  data.append("pinataMetadata", metadata);
+  data.append("file", selectedFile, selectedFile["name"]);
+
+  let fileHash;
+  await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${PINATA_JWT_TOKEN}`,
+    },
+    body: data,
+  }).then(async (response) => {
+    response = await response.json();
+    fileHash = response.IpfsHash;
+  });
+
+  return fileHash;
+};
+
+const addNFTCard = async (fileHash, item) => {
+  let currId = currItemId;
+  if (currId == 0) {
+    await $("#slider").slick("slickRemove", 0);
+  }
+  await $("#slider").slick(
+    "slickAdd",
+    `<div>
+      <a class="block hover-bg-indigo-lightest-10 ease-300" style="text-align: center; padding: 10px;">
+        <img src="${PINATA_GATEWAY_PREFIX}/${fileHash}" alt="NFT-Image" style="width: 100%; height: 300px">
+        <p id="nft-name-${currId}" class="fw-600 white fs-m3 mt-3">
+          ${item?.status}
+        </p>
+        <div id="nft-info-${currId}" class="indigo fs-s3 italic my-4">Information about NFT</div>
+        <div class="inline-flex">
+            <button id="listing-btn-${currId}" class="sm-mx-1 button half bg-indigo white hover-opacity-100 hover-scale-up-1 ease-300">LIST</button>
+            <button id="auction-btn-${currId}" class="sm-mx-1 button half bg-indigo white hover-opacity-100 hover-scale-up-1 ease-300">AUCTION</button>
+            <button id="equip-btn-${currId}" class="sm-mx-1 button half bg-indigo white hover-opacity-100 hover-scale-up-1 ease-300">EQUIP</button>
+        </div>
+      </a>
+    </div>`
+  );
+
+  const listButton = document.getElementById(`listing-btn-${currId}`);
+  const auctionButton = document.getElementById(`auction-btn-${currId}`);
+  const equipButton = document.getElementById(`equip-btn-${currId}`);
+
+  const listPriceInput = document.getElementById("list-amount-input");
+  listPriceInput.value = "";
+
+  const basePriceInput = document.getElementById("base_auction_price");
+  basePriceInput.value = "";
+
+  const amIOwner = item
+    ? item.owner.toLowerCase() == currentUser.toLowerCase()
+    : false;
+
+  if (item) {
+    if (amIOwner) {
+      if (item.status == "Created" || item.status == "Bought") {
+        listButton.addEventListener("click", () => {
+          selectedToken = currId;
+          window.location = "#listing";
+        });
+        auctionButton.addEventListener("click", () => {
+          selectedToken = currId;
+          window.location = "#auctions";
+        });
+        equipButton.addEventListener("change", () => {
+          selectedToken = currId;
+          // <TODO> change spaceship
+        });
+      } else if (item.status == "Listed") {
+        listButton.innerHTML = "LISTED";
+        auctionButton.disabled = true;
+
+        listButton.addEventListener("click", () => {
+          selectedToken = currId;
+          listPriceInput.value = item.listingPrice;
+          window.location = "#listing";
+        });
+      } else if (item.status == "On Auction") {
+        listButton.disabled = true;
+        auctionButton.innerHTML = "ON AUCTION";
+
+        auctionButton.addEventListener("click", () => {
+          selectedToken = currId;
+          basePriceInput.value = item.basePrice;
+          window.location = "#auction";
+        });
+      }
+    } else {
+      if (item.status == "Created" || item.status == "Bought") {
+        listButton.disabled = true;
+        auctionButton.disabled = true;
+      } else if (item.status == "Listed") {
+        listButton.innerHTML = "BUY";
+        document.getElementById("list-button").innerHTML = "BUY";
+        listButton.addEventListener("click", () => {
+          selectedToken = currId;
+          listPriceInput.value = item.listingPrice;
+          window.location = "#listing";
+        });
+        auctionButton.disabled = true;
+      } else if (item.status == "On Auction") {
+        listButton.disabled = true;
+        auctionButton.innerHTML = "BID";
+        auctionButton.addEventListener("click", () => {
+          selectedToken = currId;
+          window.location = "#auctions";
+        });
+      }
+    }
+  } else {
+    listButton.addEventListener("click", () => {
+      selectedToken = currId;
+      window.location = "#listing";
+    });
+    auctionButton.addEventListener("click", () => {
+      selectedToken = currId;
+      window.location = "#auctions";
+    });
+    equipButton.addEventListener("change", () => {
+      selectedToken = currId;
+      // <TODO> change spaceship
+    });
+  }
+
+  items.push(item);
+  currItemId += 1;
+};
+window.onload = async () => {
+  setUp();
   const loadedSuccessfully = await loadWeb3();
   if (!loadedSuccessfully) return;
 
   await loadContracts();
   const callOptions = {
-    from: deployer,
+    from: currentUser,
   };
 
-  document.getElementById("list_button").addEventListener("click", async () => {
-    let listing_price = document.getElementById("list_amount_edit").value;
-    await Marketplace.methods
-      .listItem(clickedTokenID, listing_price)
-      .send(callOptions)
-      .then(function (receipt) {
-        console.log(receipt);
-      });
-  });
+  await Marketplace.methods
+    .getItems()
+    .call(callOptions)
+    .then(async (_items) => {
+      for (let item of _items) {
+        const tokenURI = await Marketplace.methods
+          .tokenURI(item.tokenId)
+          .call(callOptions);
 
-  document.addEventListener("click", (e) => {
-    let element = e.target;
-    console.log("click event triggered");
-    if (element.id == "auction-btn-0") {
-    }
-    if (element.id == "auction-btn-1") {
-    }
-  });
-
-  document
-    .getElementById("nft-image-input")
-    .addEventListener("change", function () {
-      const selectedFile = this.files[0];
-
-      const data = new FormData();
-      const metadata = JSON.stringify({
-        name: selectedFile["name"],
-      });
-      data.append("pinataMetadata", metadata);
-      data.append("file", selectedFile, selectedFile["name"]);
-
-      fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${PINATA_JWT_TOKEN}`,
-        },
-        body: data,
-      }).then(async (response) => {
-        response = await response.json();
-        uploadedFileHash = response.IpfsHash;
-
-        const nft1Image = document.getElementById("image-src-1");
-        nft1Image.src = "https://gateway.pinata.cloud/ipfs/" + uploadedFileHash;
-      });
+        addNFTCard(tokenURI, item);
+      }
     });
 
+  document.getElementById("list-button").addEventListener("click", async () => {
+    let listing_price = document.getElementById("list-amount-input").value;
+    console.log(listing_price, selectedToken);
+    if (items[selectedToken].status == "Listed") {
+      await Marketplace.methods
+        .buyItem(selectedToken)
+        .send({ ...callOptions, value: listing_price });
+    } else if (items[selectedToken].status != "On Auction") {
+      await Marketplace.methods
+        .listItem(selectedToken, listing_price)
+        .send(callOptions);
+      document.getElementById("list-button").innerHTML = "Listed";
+      document.getElementById("list-button").disabled = true;
+    }
+  });
+
   document.getElementById("mint_nft").addEventListener("click", async () => {
-    await Marketplace.methods
-      .mintNFT(uploadedFileHash)
-      .send(callOptions)
-      .then(function (receipt) {
-        debug(receipt);
-      });
+    const selectedFile = document.getElementById("nft-image-input").files[0];
+    const fileHash = await uploadToPinata(selectedFile);
+
+    await Marketplace.methods.mintNFT(fileHash).send(callOptions);
+    const item = await Marketplace.methods.getItem(currItemId);
+    addNFTCard(fileHash);
   });
 
   document.getElementById("bid_button").addEventListener("click", async () => {
     let biddingAmount = document.getElementById("bid_amount_edit").value;
 
     await Marketplace.methods
-      .bid(clickedTokenID)
-      .send({ from: deployer, value: biddingAmount })
-      .then(function (receipt) {
-        debug(receipt);
-      });
+      .bid(selectedToken)
+      .send({ ...callOptions, value: biddingAmount });
   });
 
   document.getElementById("start_bid").addEventListener("click", async () => {
-    document.getElementById("bid_amount_edit").disabled = false;
-    document.getElementById("bid_button").disabled = false;
     var h = document.getElementById("timeH").value;
     var m = document.getElementById("timeM").value;
     var s = document.getElementById("timeS").value;
@@ -218,15 +294,12 @@ window.onload = async () => {
     endTime += h * 3600;
     endTime += m * 60;
     endTime += s;
-    // now pass this
 
     var duration = new Date().getTime() + (h * 3600000 + m * 60000 + s * 1000);
     var timer = setInterval(async function () {
       let now = new Date().getTime();
       let t = duration - now;
-      console.log(t);
       if (t >= 0) {
-        let days = Math.floor(t / (1000 * 60 * 60 * 24));
         let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         let mins = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
         let secs = Math.floor((t % (1000 * 60)) / 1000);
@@ -234,19 +307,13 @@ window.onload = async () => {
         document.getElementById("timeM").value = mins;
         document.getElementById("timeS").value = secs;
       } else {
-        document.getElementById("bid_amount_edit").disabled = true;
-        document.getElementById("bid_button").disabled = true;
-        document.getElementById("winner_button").disabled = false;
         clearInterval(timer);
       }
     }, 1000);
 
     await Marketplace.methods
-      .startAuction(clickedTokenID, action_base_price, endTime)
-      .send(callOptions)
-      .then(function (receipt) {
-        console.log(receipt);
-      });
+      .startAuction(selectedToken, action_base_price, endTime)
+      .send(callOptions);
   });
 
   document
